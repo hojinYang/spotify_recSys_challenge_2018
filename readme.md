@@ -6,6 +6,6 @@ Sungkyunkwan university.
 This project is an automatic playlist continuation(APC) system implemented using Tensorflow.  
 Document and source code will be updated after the challenge submission due date.   
   
-hojinyang7@skku.edu
+hojin.yang7@gmail.com
 
 
