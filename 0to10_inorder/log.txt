@@ -1,0 +1,43 @@
+**********
+[dae mode] start at 2018-06-25 16:29:38.123809
+<<only test mode>>
+seed num: test-1
+rprecision: 0.119987 ndcg: 0.403286 rsc: 4.510000
+seed num: test-5
+rprecision: 0.154430 ndcg: 0.456639 rsc: 2.411000
+seed num: test-10
+rprecision: 0.181318 ndcg: 0.534136 rsc: 0.877000
+seed num: test-25
+rprecision: 0.211762 ndcg: 0.631311 rsc: 0.361022
+seed num: test-100
+rprecision: 0.167354 ndcg: 0.552374 rsc: 0.593750
+seed num: test-25r
+rprecision: 0.259971 ndcg: 0.696567 rsc: 0.212460
+seed num: test-100r
+rprecision: 0.227879 ndcg: 0.639857 rsc: 0.214844
+**********
+**********
+[dae mode] start at 2018-06-28 15:18:57.191418
+<<only test mode>>
+seed num: test-1
+rprecision: 0.119559 ndcg: 0.405870 rsc: 4.586000
+seed num: test-5
+rprecision: 0.152888 ndcg: 0.455104 rsc: 2.440000
+seed num: test-10
+**********
+[dae mode] start at 2018-06-28 15:23:32.471329
+<<only test mode>>
+seed num: test-1
+rprecision: 0.117974 ndcg: 0.399433 rsc: 4.528000
+seed num: test-5
+rprecision: 0.155050 ndcg: 0.456052 rsc: 2.414000
+seed num: test-10
+rprecision: 0.182765 ndcg: 0.534773 rsc: 0.888000
+seed num: test-25
+rprecision: 0.212409 ndcg: 0.631380 rsc: 0.364217
+seed num: test-100
+rprecision: 0.167405 ndcg: 0.553675 rsc: 0.589844
+seed num: test-25r
+rprecision: 0.263034 ndcg: 0.699385 rsc: 0.215655
+seed num: test-100r
+rprecision: 0.229796 ndcg: 0.642800 rsc: 0.207031
