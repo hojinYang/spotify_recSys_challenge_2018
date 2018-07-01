@@ -1,4 +1,4 @@
-from utils.fold_reader import *
+from utils.data_reader import *
 import utils.metrics as met
 from models.DAEs import *
 from models.title_get import get_model
@@ -70,9 +70,9 @@ def show_result(rprecision, ndcg, rsc):
 
 def run(conf, only_testmode):
     if -1 in conf.firstN:
-        reader = fold_reader(data_dir=conf.fold_dir, filename='train', batch_size=conf.batch)
+        reader = data_reader(data_dir=conf.data_dir, filename='train', batch_size=conf.batch)
     else:
-        reader = fold_reader_firstN(data_dir=conf.fold_dir, filename='train',
+        reader = data_reader_firstN(data_dir=conf.data_dir, filename='train',
                                     batch_size=conf.batch, from_to=conf.firstN)
 
     conf.n_tracks = reader.num_tracks
@@ -87,7 +87,7 @@ def run(conf, only_testmode):
 
     readers_test = {}
     for seed in test_seed:
-        readers_test[seed] = fold_reader_test(data_dir=conf.fold_dir, filename=seed,
+        readers_test[seed] = data_reader_test(data_dir=conf.data_dir, filename=seed,
                                               batch_size=conf.batch, test_num=conf.testsize)
 
     info = None

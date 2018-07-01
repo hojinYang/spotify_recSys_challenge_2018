@@ -1,6 +1,4 @@
 """
-hojin Yang
-
 iterates over the million playlist data set and outputs info
 about what is in there.
 """
@@ -40,10 +38,12 @@ def change_title2ixs(title):
     
 
 class Spotify_train:
+    """
+    generate training data set (a set of MPDs->train)
+    """
     def __init__(self, train_fullpaths, trk_min_count, art_min_count, is_title_normalize, save_dir):
         self.is_title_normalize = is_title_normalize
         self.num_playlists = 0
-        
         self.playlist_tracks = list()
         self.playlist_artists = list()
         self.playlist_titles = list()
@@ -147,6 +147,9 @@ class Spotify_train:
 
 
 class Spotify_test:
+    """
+    generate test data set (a set of MPDs->test)
+    """
     def __init__(self, test_fullpaths, train_json, test_seeds_num, save_dir, is_shuffle):
         with open(train_json) as data_file:
             train = json.load(data_file)
@@ -185,8 +188,7 @@ class Spotify_test:
         for track in playlist['tracks']:
             track_uri = track['track_uri'].split(':')[2]
             artist_uri = track['artist_uri'].split(':')[2]
-
-            #training set에 애초에 존재하지 않았던 track은 고려하지 않겠다!
+            # not consider tracks that did not appear in the training set.
             if track_uri not in self.track_total:
                 continue
 
@@ -284,7 +286,10 @@ class Spotify_challenge:
             name = name+ '_inorder'
         else:
             name = name + '_random'
-        name = name + '_%dto%d' %(self.num_trk_lst[0],self.num_trk_lst[-1])
+        if len(num_trk_lst) == 1:
+            name = name + '_%d' % self.num_trk_lst[0]
+        else:
+            name = name + '_%dto%d' %(self.num_trk_lst[0],self.num_trk_lst[-1])
         print(name)
         with open(save_dir+'/'+name,'w') as make_file:
             json.dump(file_data,make_file,indent="\t")

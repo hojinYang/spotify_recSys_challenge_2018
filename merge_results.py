@@ -2,19 +2,18 @@ import os
 import argparse
 import pickle
 import pandas as pd
-# import tensorflow as tf
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description="args")
-    args.add_argument('--dir', type=str, default='challenge_pkl')
+    args.add_argument('--dir', type=str, default='challenge_results')
 
     args = args.parse_args()
     dir = "./"+args.dir
 
-    total_cands = [['team_info', 'main', 'hello world!', 'hojinyang7@skku.edu']]
-    for result in  os.listdir(dir):
+    total_cands = [['team_info', 'track', 'team_name', 'email@address.com']]
+    for result in os.listdir(dir):
         result = dir + '/' + result
-        with open(result,'rb') as f:
+        with open(result, 'rb') as f:
             cand = pickle.load(f)
             total_cands += cand
 

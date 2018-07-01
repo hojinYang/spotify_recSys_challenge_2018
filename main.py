@@ -1,20 +1,20 @@
 """
-run main_dae.py or main_challenge.py
+run main_train.py or main_challenge.py
 
 """
 
 import os
 import argparse
 import configparser
-import main_dae
-import main_challenge
+from main_runner import main_train, main_challenge
 
 
 class Conf:
     def __init__(self, dir, ini):
         self.dir = dir
         self.ini = ini
-        self.fold_dir = self.ini.get('BASE','fold_dir')
+        self.data_dir = self.ini.get('BASE','data_dir')
+        self.result_dir = self.ini.get('BASE','result_dir')
         self.testsize = int(self.ini.get('BASE', 'testsize'))
         self.verbose = bool(self.ini.get('BASE','verbose'))
 
@@ -31,7 +31,16 @@ class Conf:
         self.input_kp = [float(item) for item in input_kp.split(',')]
         self.kp = float(self.ini.get('DAE', 'keep_prob'))
         firstN = self.ini.get('DAE','firstN_range')
-        self.firstN = [int(item) for item in firstN.split(',')]
+        self.firstN = [float(item) for item in firstN.split(',')]
+        if len(self.firstN) == 1:
+            assert self.firstN[0] == -1.0
+        else:
+            assert self.firstN[0] <= self.firstN[1]
+            if self.firstN[1] < 1:
+                assert self.firstN[0] == 0 or self.firstN[0].is_integer() is False
+            else:
+                assert self.firstN[0] >= 1
+                assert self.firstN[0].is_integer() is True and self.firstN[1].is_integer() is True
         self.initval = os.path.join(self.dir, self.ini.get('DAE', 'initval'))
         self.save = os.path.join(self.dir, self.ini.get('DAE', 'save'))
         self.hidden = int(self.ini.get('DAE', 'hidden'))
@@ -57,18 +66,25 @@ class Conf:
         self.test_seed = ['test-' + item for item in test_seed.split(',')]
         update_seed = self.ini.get('TITLE', 'update_seed')
         self.update_seed = ['test-' + item for item in update_seed.split(',')]
-        self.rnn_hidden = int(self.ini.get('TITLE','rnn_hidden'))
-        self.filter_num = int(self.ini.get('TITLE','filter_num'))
-        self.bi = bool(self.ini.get('TITLE','bi'))
         self.char_emb = int(self.ini.get('TITLE','char_emb'))
         self.char_model = self.ini.get('TITLE','char_model')
+
+        if self.char_model == 'Char_CNN':
+            self.filter_num = int(self.ini.get('TITLE', 'filter_num'))
+            filter_size = self.ini.get('TITLE','filter_size')
+            self.filter_size = [int(item) for item in filter_size.split(',')]
+
+        elif self.char_model == 'Char_LSTM':
+            self.rnn_hidden = int(self.ini.get('TITLE', 'rnn_hidden'))
+            self.bi = bool(self.ini.get('TITLE', 'bi'))
+
         self.DAEval = os.path.join(self.dir, self.ini.get('TITLE', 'DAEval'))
         self.save = os.path.join(self.dir, self.ini.get('TITLE', 'save'))
         self.mode = 'title'
 
     def set_challenge_oonf(self):
-        self.challenge_fold = self.ini.get('CHALLENGE', 'challenge_fold')
-        self.result = os.path.join(self.dir, self.ini.get('CHALLENGE', 'result'))
+        self.challenge_data = self.ini.get('CHALLENGE', 'challenge_data')
+        self.result = os.path.join(self.result_dir, self.ini.get('CHALLENGE', 'result'))
         self.batch = int(self.ini.get('CHALLENGE', 'batch'))
 
 
@@ -82,7 +98,7 @@ if __name__ == '__main__':
     args.add_argument('--testmode', action='store_true', default=False, help="test mode if Specified(just check the result)")
 
     args = args.parse_args()
-    dir = "./"+args.dir
+    dir = os.path.join(".",args.dir)
 
     if not os.path.isdir(dir):
         print("ERROR: Cannot find "+dir+" ->Create directory and config.ini file first")
@@ -99,15 +115,15 @@ if __name__ == '__main__':
     conf.set_dae_conf()
     if args.pretrain:
         conf.set_pretrain_conf()
-        main_dae.run(conf, args.testmode)
+        main_train.run(conf, args.testmode)
 
     elif args.dae:
         conf.set_dae_conf()
-        main_dae.run(conf, args.testmode)
+        main_train.run(conf, args.testmode)
 
     elif args.title:
         conf.set_title_conf()
-        main_dae.run(conf, args.testmode)
+        main_train.run(conf, args.testmode)
 
     elif args.challenge:
         conf.set_title_conf()

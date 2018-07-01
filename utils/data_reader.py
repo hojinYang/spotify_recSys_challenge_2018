@@ -4,18 +4,18 @@ import numpy as np
 import time
 
 
-class fold_reader:
+class data_reader:
     def __init__(self, data_dir, filename, batch_size):
         
         with open(data_dir+'/'+filename) as data_file:
-            fold_tr = json.load(data_file)
-        self.num_tracks = len(fold_tr['track_uri2id'])
-        self.num_items = self.num_tracks + len(fold_tr['artist_uri2id'])
-        self.max_title_len = fold_tr['max_title_len']
-        self.num_char = fold_tr['num_char']
-        self.playlists = fold_tr['playlists']
+            data_tr = json.load(data_file)
+        self.num_tracks = len(data_tr['track_uri2id'])
+        self.num_items = self.num_tracks + len(data_tr['artist_uri2id'])
+        self.max_title_len = data_tr['max_title_len']
+        self.num_char = data_tr['num_char']
+        self.playlists = data_tr['playlists']
 
-        del fold_tr
+        del data_tr
         self.batch_size = batch_size
         self.train_idx = 0
     
@@ -53,18 +53,18 @@ class fold_reader:
         return trk_positions, art_positions, y_positions, titles, trk_val, art_val
 
 
-class fold_reader_firstN:
+class data_reader_firstN:
     def __init__(self, data_dir, filename, batch_size, from_to):
 
         with open(data_dir + '/' + filename) as data_file:
-            fold_tr = json.load(data_file)
-        self.num_tracks = len(fold_tr['track_uri2id'])
-        self.num_items = self.num_tracks + len(fold_tr['artist_uri2id'])
-        self.max_title_len = fold_tr['max_title_len']
-        self.num_char = fold_tr['num_char']
-        self.playlists = fold_tr['playlists']
+            data_tr = json.load(data_file)
+        self.num_tracks = len(data_tr['track_uri2id'])
+        self.num_items = self.num_tracks + len(data_tr['artist_uri2id'])
+        self.max_title_len = data_tr['max_title_len']
+        self.num_char = data_tr['num_char']
+        self.playlists = data_tr['playlists']
 
-        del fold_tr
+        del data_tr
         self.batch_size = batch_size
         self.train_idx = 0
         self.from_to = from_to
@@ -79,13 +79,15 @@ class fold_reader_firstN:
 
         for i in range(self.batch_size):
             train_trk, train_art, train_title = self.playlists[self.train_idx]
-
-            if len(train_trk) != 0:
-                n = self.from_to[0]
-                if n !=0:
-                    n = int(len(train_trk) / n)
-                m = min(len(train_trk), self.from_to[1])
-                given_num = random.randrange(n + 1, m + 1)
+            len_t = len(train_trk)
+            if len_t != 0:
+                if self.from_to[0] >= 1:
+                    n = int(self.from_to[0])
+                    m = int(min(len_t, self.from_to[1]))
+                else:
+                    n = int(max(len_t * self.from_to[0], 1))
+                    m = int(max(len_t * self.from_to[1], 1))
+                given_num = random.randrange(n, m + 1)
                 tmp = train_trk
                 trks = np.array([tmp]).T
                 playlist = np.full_like(trks, fill_value=i, dtype=np.int)
@@ -94,12 +96,16 @@ class fold_reader_firstN:
                 val = [1] * given_num + [0] * (len(train_trk) - given_num)
                 trk_val += val
 
-            if len(train_art) != 0:
-                n = self.from_to[0]
-                if n != 0:
-                    n = int(len(train_art) / n)
-                m = min(len(train_art), self.from_to[1])
-                given_num = random.randrange(n + 1, m + 1)
+            len_a = len(train_art)
+            if len_a != 0:
+                if self.from_to[0] >= 1:
+                    n = int(self.from_to[0])
+                    m = int(min(len_a, self.from_to[1]))
+                else:
+                    n = int(max(len_a * self.from_to[0], 1))
+                    m = int(max(len_a * self.from_to[1], 1))
+
+                given_num = random.randrange(n, m + 1)
                 tmp = train_art
                 arts = np.array([tmp]).T
                 playlist = np.full_like(arts, fill_value=i, dtype=np.int)
@@ -121,13 +127,13 @@ class fold_reader_firstN:
         return trk_positions, art_positions, y_positions, titles, trk_val, art_val
 
 
-class fold_reader_test:
+class data_reader_test:
     def __init__(self, data_dir, filename, batch_size, test_num):
         print("now processing: " + filename)
         with open(data_dir + '/' + filename) as data_file:
-            fold_te = json.load(data_file)
-        self.playlists = fold_te['playlists'][:test_num]
-        del fold_te
+            data_te = json.load(data_file)
+        self.playlists = data_te['playlists'][:test_num]
+        del data_te
         test_num = test_num
         if test_num > len(self.playlists):
             test_num = len(self.playlists)
@@ -176,26 +182,27 @@ class fold_reader_test:
         return x_positions, test_seed, test_answer, test_titles, x_ones
     
     
-class fold_reader_challenge:
+class data_reader_challenge:
     def __init__(self, data_dir, filename, batch_size):
         print("now processing: " + filename)
         with open(data_dir + '/' + filename) as data_file:
-            fold_ch = json.load(data_file)
-        self.playlists = fold_ch['playlists']
-        self.id2uri = fold_ch['id2uri']
-        self.num_tracks = fold_ch['num_tracks']
-        self.num_items = fold_ch['num_items']
-        self.is_in_order = fold_ch['in_order']
-        self.max_title_len = fold_ch['max_title_len']
-        self.num_char = fold_ch['num_char']
+            data_ch = json.load(data_file)
+        self.playlists = data_ch['playlists']
+        self.id2uri = data_ch['id2uri']
+        self.num_tracks = data_ch['num_tracks']
+        self.num_items = data_ch['num_items']
+        self.is_in_order = data_ch['in_order']
+        self.max_title_len = data_ch['max_title_len']
+        self.num_char = data_ch['num_char']
 
-        del fold_ch
+        del data_ch
 
         self.batch_size = batch_size
         self.ch_idx = 0
 
     def next_batch(self):
         trk_positions = []
+        trk_ones = []
         art_positions = []
         ch_seed = []
         ch_titles = []
@@ -205,20 +212,22 @@ class fold_reader_challenge:
         # start_time = time.time()
         for i in range(self.batch_size):
             seed, seed_art, title, title_exist, pid = self.playlists[self.ch_idx]
+            len_s = len(seed)
+            if (len_s > 50) and self.is_in_order:
+                trk_ones += [0.15]*(len_s-15) + [1.0]*15
+            else:
+                trk_ones += [1.0] * len_s
 
             trks = np.array([seed]).T
             playlist = np.full_like(trks, fill_value=i, dtype=np.int)
             conc = np.concatenate((playlist, trks), axis=1)
             trk_positions.append(conc)
-            #trk_one_counter += len(seed)
-
             ch_seed.append(seed)
 
             arts = np.array([seed_art]).T
             playlist = np.full_like(arts, fill_value=i, dtype=np.int)
             conc = np.concatenate((playlist, arts), axis=1)
             art_positions.append(conc)
-            #art_one_counter+=len(seed_art)
             
             ch_titles.append(title)
             ch_titles_exist.append(title_exist)
@@ -233,6 +242,6 @@ class fold_reader_challenge:
         art_positions = np.concatenate(art_positions)
         x_positions = np.concatenate((trk_positions, art_positions), 0)
 
-        x_ones = [1] * len(trk_positions) + [0.5] * len(art_positions)
+        x_ones = trk_ones + [0.5] * len(art_positions)
 
         return x_positions, ch_seed, ch_titles, ch_titles_exist, ch_pid, x_ones

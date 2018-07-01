@@ -2,7 +2,7 @@
 import tensorflow as tf
 import numpy as np
 
-class LSTM():
+class Char_LSTM():
     def __init__(self, config, fc_layers):
         self.config = config
         self.embedding = config.emb

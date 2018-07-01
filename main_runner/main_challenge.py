@@ -1,4 +1,4 @@
-from utils.fold_reader import fold_reader, fold_reader_challenge
+from utils.data_reader import data_reader, data_reader_challenge
 import utils.metrics as met
 from models.DAEs import *
 from models.title_get import get_model
@@ -44,7 +44,7 @@ def cand_generate(scores, seed, id2uri):
 def run(conf):
     ## set input len trk len
 
-    reader_challenge = fold_reader_challenge(data_dir=conf.fold_dir, filename=conf.challenge_fold, batch_size=conf.batch)
+    reader_challenge = data_reader_challenge(data_dir=conf.data_dir, filename=conf.challenge_data, batch_size=conf.batch)
 
     conf.n_tracks = reader_challenge.num_tracks
     conf.n_input = reader_challenge.num_items
