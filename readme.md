@@ -3,6 +3,8 @@
 ***hello world!*** Team: Hojin Yang, Minjin Choi, and Yoon Ki Jeong.  
 Data Mining Lab, Sungkyunkwan university.   
 
+## This document is still incomplete and will be updated soon.  
+
 
 This project is an automatic playlist continuation(APC) system implemented using Tensorflow.  
 The main algorithm we use is Denoising Autoencoders which reconstructs original playlists from an input of corrupted ones. 
