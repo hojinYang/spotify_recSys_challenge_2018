@@ -12,9 +12,11 @@ In additon, we apply Character-level convolutional networks to playlist-title ba
 
 
 The charateristics of our model are as follows: 
-* Unlike pure collaborate filtering model which only extend playlists not profiled at training time, our system generates a list of recommended tracks to a new playlist(not in the training set).
+* Unlike pure collaborate filtering model which only extend playlists not profiled at training time, 
+our system generates a list of recommended tracks to a new playlist(not in the training set).
 
-* Not only tracks but also artists are used to construct latent representation of playlists. This allows robust recommendation for a playlist of songs occur in very few playlists.
+* Not only tracks but also artists are used to construct latent representation of playlists. 
+This allows robust recommendation for a playlist of songs occur in very few playlists.
 
 ## Development Environment
 * Python Anaconda v4.4.10  
@@ -23,7 +25,8 @@ The charateristics of our model are as follows:
 * GPU: 4 Nvidia GTX 1080Ti  
 
 ## Dataset
-Spotify has produced the MPD(Million Playlist Dataset) which contains a million user-curated playlists. Each playlist in the MPD contains a playlist title, a list of tracks(with metadata), and other miscellaneous information. 
+Spotify has produced the MPD(Million Playlist Dataset) which contains a million user-curated playlists. 
+Each playlist in the MPD contains a playlist title, a list of tracks(with metadata), and other miscellaneous information. 
 
 ## Preprocess The Data
 Proceed with these steps to convert the MPD’s data format into our system's.
@@ -51,14 +54,15 @@ python data_generator.py --mincount_trk 3
 
     
 Each test files contains same seed pattern as Spotify RecSys Challenge: seed 0, 1, 5, 10, 25, 100, 25r, 100r.  
-We also divide challenge set into four subsets based on seed pattern: (0,1) , (5) , (10,25,100) , (25r,100r)  
+We also divide challenge set into four categories based on seed pattern by default: (0,1) , (5) , (10,25,100) , (25r,100r)  
  
-For submission, we train our models with four different denoising schemes to train our model in three versions.
-Each version performs better on one of four different challenge subsets.  
+For submission, we train our models with four different denoising schemes to train our model.
+Each version performs better on one of four different challenge categories.  
 
 
 ## Run The System
-Our model is composed of two parts: Denoising Autoencoders and Character-level CNN; train the parameters of the DAE first, then integrate with char-level CNN.
+Our model is composed of two parts: Denoising Autoencoders and Character-level CNN; 
+train the parameters of the DAE first, then integrate with char-level CNN.
 1. Create a folder into the root folder of the project. *config.ini* file, which contains information required to run the model, 
 must be placed into the created folder(Check the structure of *conf.ini* below).  
 2. You can train models by running **main.py**.  
@@ -68,7 +72,7 @@ must be placed into the created folder(Check the structure of *conf.ini* below).
 `--dae`			: Train dae parameteres if specified  
 `--title`		: Train paramters of title module if specified  
 `--challenge`	: Generate challenge submission candidates if specified  
-`--testmode`	: Get the results without training the model   
+`--testmode`	: Get the results without training the model if specified   
 Suppose the folder you create at step above is './sample'.   
 we recommand you to **pretrain the DAE with tied condition**; constrain decoder’s weights to be equal to transposed encoder’s.
 Using those weights as initial values of DAE brings much better results than not pretraining the weights.   
@@ -88,15 +92,16 @@ After you run DAE, its parameters are saved as pickle format in ./sample.
 ```console
 python main.py --dir sample --title
 ```
-4. Finally you can generate challenge submission candidates by using graph you get at the step above:  
+4. Finally you can generate challenge submission candidates by using graph and DAE paramters you get at the steps above:  
 ```console
 python main.py --dir sample --challenge
 ```
 **[note]**  
-For all models, paramters are updated if the models' r-precision value increases. Our system calculates r-precision score every epoch.  
+For all models, paramters are updated if the avearge of *update_seeds* r-precision score(s) increases. Our system calculates r-precision score every epoch.  
 You must specify only one mode(dae, title, challenge) when you set argument of *main.py*.  
-You can easily replace parameter pickle files(for DAE) and ckpt graph file(for title) with other paramters with same data format and shape. 
-If you want to check metrices score after replacing paramters with another one with the same shape, using *--testmode* is efficient:
+You can easily replace parameter pickle files(for DAE) and/or ckpt graph file(for title) with other directories, 
+if both have same number of track & artist and same CNN filter shapes.     
+If you want to check metrices scores after replacing paramters with directory's, using *--testmode* is efficient:
 ```console
 # after replacing DAE pickle file from another folder #
 python main.py --dir sample --dae --testmode
@@ -110,12 +115,13 @@ except *'mpd.slice.250000-250999', 'mpd.slice.500000-500999', 'mpd.slice.750000-
 The directory containing challenge_set.json is also needed for generating challenge data following our format.  
 2. Run **data_generator.py** with default arguments(or change if you want). 
 Then './data' is created which contains training data and test data with multiple categories as json format. 
-Challenge data with four different categories are also created as we set `--divide_ch` of **data_generator** as *0-1,5,10-25,10-25r(andom)*.  
-Dividing challenge data into four subset means we use four different schemes to train our model and ensemble the results at the last moment.  
-3. We already set four different directories which contain config.ini optimized for each challenge categories. 
+Challenge data with four different categories are also created as we set `--divide_ch` of **data_generator.py** as *0-1,5,10-25,10-25r(andom)*.  
+Dividing challenge data into four categories means we use four different denoising schemes to train our model 
+and merge the results at the last moment.  
+3. We already set four different directories which contain *config.ini* optimized for each challenge categories. 
 The approximante information is as follows:  
 
-| directory | challenge category | firstN | input denoising | pretrain only	|
+| directory | challenge category | firstN_range | input denoising | pretrain only	|
 |--------|--------|--------|--------|--------|
 | 0to1_inorder | challenge_inorder_0to1 | 0, 0.3 | 0.75 | True |
 | 5_inorder | challenge_inorder_5 | 1, 50 | 0.75 | False |
@@ -154,12 +160,12 @@ and update parameters if the test-100r’s r-precision  value increases.
 *keep_prob = 0.75* means drop out 25% of input for every batch.  
 **input_kp** - *comma seperated floats list(0.0<x<=1.0).* Denoising keep probability range in  input layer.  
 *input_kp = 0.5, 0.8* means denoise randomly selected probability between 50%~20%.  
-firstN_range - *comma seperated floats or int list.* The range of n. 
-When you give the track from 0th track to n-th track of the playlist as input value.
+firstN_range - *comma seperated floats or int list.* The range of n 
+when you set the tracks from 0th track to n-th track of a playlist as input value.
 You can set it up in three different ways.
-*firstN_range - -1* means to consider all the songs in the playlist as an input value.  
-*firstN_range - float a , float b* means t0 set input track range from 0-th to random(a*N, b*N). (N == the lenght of the playlist)
-*firstN_range - int a , int b* means t0 set input track range from 0-th to random(a, b).   
+*firstN_range = -1* means to consider all the songs in the playlist as an input value.  
+*firstN_range = float a , float b* means t0 set input track range from 0-th to random(a*N, b*N). (N == the lenght of the playlist)
+*firstN_range = int a , int b* means t0 set input track range from 0-th to random(a, b).   
 ex)  
 firstN_range - -1 : 0~N  
 firstN_range - 0,50 : 0~random(0,50)  

@@ -80,9 +80,15 @@ class Conf:
 
         self.DAEval = os.path.join(self.dir, self.ini.get('TITLE', 'DAEval'))
         self.save = os.path.join(self.dir, self.ini.get('TITLE', 'save'))
+        if not os.path.isdir(self.save):
+            os.makedirs(self.save)
+            os.rmdir(self.save)
         self.mode = 'title'
 
     def set_challenge_oonf(self):
+        if not os.path.isdir(self.result_dir):
+            os.mkdir(self.result_dir)
+            
         self.challenge_data = self.ini.get('CHALLENGE', 'challenge_data')
         self.result = os.path.join(self.result_dir, self.ini.get('CHALLENGE', 'result'))
         self.batch = int(self.ini.get('CHALLENGE', 'batch'))

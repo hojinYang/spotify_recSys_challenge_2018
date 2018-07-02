@@ -18,6 +18,6 @@ if __name__ == '__main__':
             total_cands += cand
 
     print("num_playlist: ", len(total_cands) - 1)
-    print("num_rec: ", len(total_cands[0]) - 1)
+    print("num_rec: ", len(total_cands[1]) - 1)
     df = pd.DataFrame(total_cands)
     df.to_csv('results.csv', index=False, header=False)
