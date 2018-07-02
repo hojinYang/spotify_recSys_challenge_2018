@@ -29,7 +29,7 @@ Spotify has produced the MPD(Million Playlist Dataset) which contains a million 
 Proceed with these steps to convert the MPD’s data format into our system's.
 1. Download Spotify's MPD tar file which contains a thousand MPD-slice json files(each contains a thounsand playlists).
 2. Divide json files into two groups: training folder and test folder. And place each data folders into the root folder of the project.
-3. You can get resturcturedd data by running **data_generator.py**.  
+3. You can get resturctured data by running **data_generator.py**.  
 *Arguments of data_generator.py*   
 `--datadir`		: Directory where converted dataset(training, test, challenge) will be stored. *default: ./data*  
 `--mpd_tr`		: Directory which contains MPD-slice json files used for training the model. *default: ./mpd_train*  
@@ -42,7 +42,7 @@ For example, you can set the dicrectories as the following command :
 ```console  
 python data_generator.py --datadir ./data --mpd_tr ./mpd_train --mpd_te ./mpd_test --mpd_ch ./challenge
 ```
-If you want set manually the minimum number of occurences of tracks and artists on training set. 
+You can set manually the minimum number of occurences of tracks and artists on training set manually. 
 When you run the following command, tracks with less than three occurrences are removed:
 ```console
 python data_generator.py --mincount_trk 3 
