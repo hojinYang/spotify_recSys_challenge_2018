@@ -3,7 +3,7 @@
 ***hello world!*** Team: Hojin Yang, Minjin Choi, and Yoon Ki Jeong.  
 Data Mining Lab, Sungkyunkwan university.   
 
-## This document is still incomplete and will be updated soon.  
+## This document/codes are still incomplete and will be updated soon. 
 
 
 This project is an automatic playlist continuation(APC) system implemented using Tensorflow.  
@@ -12,7 +12,7 @@ In additon, we apply Character-level convolutional networks to playlist-title ba
 
 
 The charateristics of our model are as follows: 
-* Unlike pure collaborate filtering model which only extend playlists profiled at training time, 
+* Unlike pure collaborate filtering model which only extends playlists profiled at training time, 
 our system generates a list of recommended tracks to a new playlist(not in the training set).
 
 * Not only tracks but also artists are used to construct latent representation of playlists. 
@@ -56,8 +56,8 @@ python data_generator.py --mincount_trk 3
 Each test files contains same seed pattern as Spotify RecSys Challenge: seed 0, 1, 5, 10, 25, 100, 25r, 100r.  
 We also divide challenge set into four categories based on seed pattern by default: (0,1) , (5) , (10,25,100) , (25r,100r)  
  
-For submission, we train our models with four different denoising schemes to train our model.
-Each version performs better on one of four different challenge categories.  
+For submission, we train our models with four different denoising schemes.
+Each schemes performs better on one of four different challenge categories.  
 
 
 ## Run The System
@@ -73,7 +73,7 @@ must be placed into the created folder(Check the structure of *conf.ini* below).
 `--title`		: Train paramters of title module if specified  
 `--challenge`	: Generate challenge submission candidates if specified  
 `--testmode`	: Get the results without training the model if specified   
-Suppose the folder you create at step above is './sample'.   
+Suppose the folder you create at the step above is './sample'.   
 we recommand you to **pretrain the DAE with tied condition**; constrain decoder’s weights to be equal to transposed encoder’s.
 Using those weights as initial values of DAE brings much better results than not pretraining the weights.   
 First, run main in pretrain mode(tied DAE):  
@@ -98,18 +98,18 @@ python main.py --dir sample --challenge
 ```
 **[note]**  
 For all models, paramters are updated if the avearge of *update_seeds* r-precision score(s) increases. Our system calculates r-precision score every epoch.  
-You must specify only one mode(dae, title, challenge) when you set argument of *main.py*.  
+You must specify only one mode(dae, title, challenge) when you set arguments of *main.py*.  
 You can easily replace parameter pickle files(for DAE) and/or ckpt graph file(for title) with other directories, 
-if both have same number of track & artist and same CNN filter shapes.     
+if both have same number of tracks & artists and same CNN filter shapes.     
 If you want to check metrices scores after replacing paramters with directory's, using *--testmode* is efficient:
 ```console
 # after replacing DAE pickle file from another folder #
 python main.py --dir sample --dae --testmode
 ```
 
-## Build Our Submission    
-We already set the initial setting: create 4 different directory(0to1_inorder,5_inorder,10to100_inorder, 25to100_random), 
-and set config file of each directory.  
+## Build Our Submission
+We already set the initial setting: create 4 different directories(0to1_inorder,5_inorder,10to100_inorder, 25to100_random), 
+and set config files of each directories.  
 1. Divide 1,000 mpd.slice.###.json files into two directories(train, test). We use 997 slices for training 
 except *'mpd.slice.250000-250999', 'mpd.slice.500000-500999', 'mpd.slice.750000-750999'* which are used for testing the model.  
 The directory containing challenge_set.json is also needed for generating challenge data following our format.  
@@ -120,12 +120,12 @@ Dividing challenge data into four categories means we use four different denoisi
 and merge the results at the last moment.  
 3. We already set four different directories which contain *config.ini* optimized for each challenge categories. 
 The approximante information is shown in the table below.  
-4. Run pretrain mode for each directories. Then run dae mode except 0to1_inorder  
-5. For title mode, it is more efficient to run just one directory(0to1_inorder) 
-and copy the thensor graph outputs(generated after running on title mode) to others. 
+4. Run in pretrain mode for each directories. Then run in dae mode except 0to1_inorder.  
+5. For title mode, it is more efficient to run in just one directory(0to1_inorder) 
+and copy the tensor graph outputs(generated after running on title mode) to others. 
 You don't have to train in title mode for all directories, as outputs are same.  
 6. Run challenge mode for each directories.  
-7. Run ***merge_results.py*** to merge results from different directories and generate .csv files.  
+7. Run **merge_results.py** to merge results from different directories and generate .csv files.  
 
 | directory | challenge category | firstN_range | input denoising | pretrain only	|
 |--------|--------|--------|--------|--------|
