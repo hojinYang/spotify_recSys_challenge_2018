@@ -182,16 +182,16 @@ and update parameters if the test-100r’s r-precision  value increases.
 *keep_prob = 0.75* means drop out 25% of input for every batch.  
 **input_kp** - *comma seperated floats list(0.0<x<=1.0).* Denoising keep probability range in  input layer.  
 *input_kp = 0.5, 0.8* means denoise randomly selected probability between 50%~20%.  
-**firstN_range** - *comma seperated floats or int list.* The range of n 
-when you set the tracks from 0th track to n-th track of a playlist as input value.
+**firstN_range** - *comma seperated floats or int list.* The range of n. 
+when you set the tracks from 0th track to n\-th track of a playlist as input value. 
 You can set it up in three different ways.  
 *firstN_range = -1* means to consider all the songs in the playlist as an input value.  
-*firstN_range = float a , float b* means t0 set input track range from 0-th to random(a\*N, b\*N). (N == the lenght of the playlist)
-*firstN_range = int a , int b* means t0 set input track range from 0-th to random(a, b).   
+*firstN_range = float a , float b* means set input track range from 0\-th to random(a\*N, b\*N). (N is the lenght of the playlist)
+*firstN_range = int a , int b* means set input track range from 0\-th to random(a, b).   
 ex)  
-firstN_range - -1 : 0~N  
-firstN_range - 0,50 : 0~random(0,50)  
-firstN_range - 0.3,0.6 : 0~random(N\*0.3, N\*0.6)  
+firstN_range - -1 : 0\~N  
+firstN_range - 0,50 : 0\~random(0,50)  
+firstN_range - 0.3,0.6 : 0\~random(N\*0.3, N\*0.6)  
 **initval** - *string.* Name of pickle file which contains pretrained parameters. Set NULL if no initial value.     
 **save** - *string.* Name of pickle file to store the updated parameters.
 
