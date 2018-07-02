@@ -2,8 +2,10 @@
 # Spotify RecSys Challenge 2018
 ***hello world!*** Team: Hojin Yang, Minjin Choi, and Yoon Ki Jeong.  
 Data Mining Lab, Sungkyunkwan university.   
+you can send us an email at hojin.yang7@gamil.com.  
 
-## This document/codes are still incomplete and will be updated soon. 
+ 
+**This document is constantly being updated.**
 
 
 This project is an automatic playlist continuation(APC) system implemented using Tensorflow.  
@@ -88,7 +90,7 @@ python main.py --dir sample --dae
 ```
 After you run DAE, its parameters are saved as pickle format in ./sample.   
 
-3. You can train char-CNN if DAE’s parameters is save in the folder you created is saved in the fold you created. After you run the command below, the final tensor graph will be generated:
+3. You can train char-CNN if DAE’s parameters is save in the folder you created. After you run the command below, the final tensor graph will be generated:
 ```console
 python main.py --dir sample --title
 ```
@@ -101,7 +103,7 @@ For all models, paramters are updated if the avearge of *update_seeds* r-precisi
 You must specify only one mode(dae, title, challenge) when you set arguments of *main.py*.  
 You can easily replace parameter pickle files(for DAE) and/or ckpt graph file(for title) with other directories, 
 if both have same number of tracks & artists and same CNN filter shapes.     
-If you want to check metrices scores after replacing paramters with directory's, using *--testmode* is efficient:
+If you want to just check metrices scores after replacing paramters with directory's, using *--testmode* is efficient:
 ```console
 # after replacing DAE pickle file from another folder #
 python main.py --dir sample --dae --testmode
@@ -110,9 +112,9 @@ python main.py --dir sample --dae --testmode
 ## Build Our Submission
 We already set the initial setting: create 4 different directories(0to1_inorder,5_inorder,10to100_inorder, 25to100_random), 
 and set config files of each directories.  
-1. Divide 1,000 mpd.slice.###.json files into two directories(train, test). We use 997 slices for training 
+1. Divide 1,000 *mpd.slice.#.json files* into two directories(mpd_train, mpd_test). We use 997 slices for training 
 except *'mpd.slice.250000-250999', 'mpd.slice.500000-500999', 'mpd.slice.750000-750999'* which are used for testing the model.  
-The directory containing challenge_set.json is also needed for generating challenge data following our format.  
+The directory containing *challenge_set.json* is also needed for generating challenge data following our format.  
 2. Run **data_generator.py** with default arguments(or change if you want). 
 Then './data' is created which contains training data and test data with multiple categories as json format. 
 Challenge data with four different categories are also created as we set `--divide_ch` of **data_generator.py** as *0-1,5,10-25,10-25r(andom)*.  
@@ -125,7 +127,7 @@ The approximante information is shown in the table below.
 and copy the tensor graph outputs(generated after running on title mode) to others. 
 You don't have to train in title mode for all directories, as outputs are same.  
 6. Run challenge mode for each directories.  
-7. Run **merge_results.py** to merge results from different directories and generate .csv files.  
+7. Run **merge_results.py** to merge results from different directories and to generate results.csv files.  
 
 | directory | challenge category | firstN_range | input denoising | pretrain only	|
 |--------|--------|--------|--------|--------|
@@ -158,7 +160,7 @@ python merge_results.py
 ```
 **[Note]**  
 * It takes about 3\~4 days to train using the whole MPD under our environment.  
-* We set every epochs as 20. If the value of A continuously decreases, 
+* We set every epochs as 20. If the r-precision of *update_seed* continuously decreases and no parameters update occur, 
 it is recommended to stop the operation manually and proceed to the next steps. 
 Also, more epochs might be needed if you train using small data set.  
 * You should modify some lines of code in *models/DAEs.py* if your system has fewer than three GPUs.  
