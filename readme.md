@@ -16,7 +16,7 @@ The charateristics of our model are as follows:
 our system generates a list of recommended tracks to a new playlist(not in the training set).
 
 * Not only tracks but also artists are used to construct latent representation of playlists. 
-This allows robust recommendation for a playlist of tracks occur in very few playlists.
+This allows robust recommendation for a playlist of songs occur in very few playlists.
 
 ## Development Environment
 * Python Anaconda v4.4.10  
@@ -64,15 +64,15 @@ Each schemes performs better on one of four different challenge categories.
 Our model is composed of two parts: Denoising Autoencoders and Character-level CNN; 
 train the parameters of the DAE first, then integrate with char-level CNN.
 1. Create a folder into the root folder of the project. *config.ini* file, which contains information required to run the model, 
-must be placed into the created folder(Check the structure of *config.ini* below).  
+must be placed into the created folder(Check the structure of *conf.ini* below).  
 2. You can train models by running **main.py**.  
 *Arguments of main.py*   
-`--dir`			: Directory name which contains config file  
-`--pretrain`	: Pretrain dae parameters if specified  
-`--dae`			: Train dae parameters if specified  
-`--title`		: Train paramters of title module if specified  
-`--challenge`	: Generate challenge submission candidates if specified  
-`--testmode`	: Get the results without training the model if specified   
+`--dir`			: Directory name which contains config file.  
+`--pretrain`	: Pretrain dae parameters if specified.  
+`--dae`			: Train dae parameters if specified.  
+`--title`		: Train paramters of title module if specified.  
+`--challenge`	: Generate challenge submission candidates if specified.  
+`--testmode`	: Get the results without training the model if specified.   
 Suppose the folder you create at the step above is './sample'.   
 we recommand you to **pretrain the DAE with tied condition**; constrain decoder’s weights to be equal to transposed encoder’s.
 Using those weights as initial values of DAE brings much better results than not pretraining the weights.   
@@ -156,7 +156,12 @@ python main.py --dir 25to100_random --challenge
 
 python merge_results.py
 ```
-
+**[Note]**  
+* It takes about 3\~4 days to train using the whole MPD under our environment.  
+* We set every epochs as 20. If the value of A continuously decreases, 
+it is recommended to stop the operation manually and proceed to the next steps. 
+Also, more epochs might be needed if you train using small data set.  
+* You should modify some lines of code in *models/DAEs.py* if your system has fewer than three GPUs.  
 
 ## Sturcture of config.ini
 ***[BASE]***  
@@ -180,13 +185,13 @@ The directory contains one training json file and multiple types of test json fi
 and update parameters if the test-100r’s r-precision  value increases.  
 **keep_prob** - *float(0.0<x<=1.0).* Drop out keep probability in hidden layer.  
 *keep_prob = 0.75* means drop out 25% of input for every batch.  
-**input_kp** - *comma seperated floats list(0.0<x<=1.0).* Denoising keep probability range in  input layer.  
+**input_kp** - *comma seperated floats list(0.0<x<=1.0).* Denoising keep probability range in input layer.  
 *input_kp = 0.5, 0.8* means denoise randomly selected probability between 50%~20%.  
-**firstN_range** - *comma seperated floats or int list.* The range of n. 
+**firstN_range** - *comma seperated floats or int list.* The range to draw a random number n,. 
 when you set the tracks from 0th track to n\-th track of a playlist as input value. 
 You can set it up in three different ways.  
 *firstN_range = -1* means to consider all the songs in the playlist as an input value.  
-*firstN_range = float a , float b* means set input track range from 0\-th to random(a\*N, b\*N). (N is the lenght of the playlist)
+*firstN_range = float a , float b* means set input track range from 0\-th to random(a\*N, b\*N). (N is the length of the playlist)
 *firstN_range = int a , int b* means set input track range from 0\-th to random(a, b).   
 ex)  
 firstN_range - -1 : 0\~N  

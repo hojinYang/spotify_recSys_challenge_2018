@@ -93,7 +93,7 @@ class data_reader_firstN:
                 playlist = np.full_like(trks, fill_value=i, dtype=np.int)
                 conc = np.concatenate((playlist, trks), axis=1)
                 trk_positions.append(conc)
-                val = [1] * given_num + [0] * (len(train_trk) - given_num)
+                val = [1] * given_num + [0] * (len_t - given_num)
                 trk_val += val
 
             len_a = len(train_art)
@@ -111,7 +111,7 @@ class data_reader_firstN:
                 playlist = np.full_like(arts, fill_value=i, dtype=np.int)
                 conc = np.concatenate((playlist, arts), axis=1)
                 art_positions.append(conc)
-                val = [1] * given_num + [0] * (len(train_art) - given_num)
+                val = [1] * given_num + [0] * (len_a - given_num)
                 art_val += val
 
             titles.append(train_title)
