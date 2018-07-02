@@ -87,14 +87,14 @@ class DAE_tied():
             self.init_weight()
 
         encoder_op = self.encoder(self.x_dropout)
-        with tf.device("/gpu:0"):  #GPU1
+        with tf.device("/gpu:1"):  #GPU1
             self.y_pred = self.decoder(encoder_op)
 
         with tf.device("/cpu:0"):  #CPU
             l2 = self.l2_loss()
             
         # Define loss and optimizer, minimize the squared error
-        with tf.device("/gpu:0"): ##SHOULD BE GPU1
+        with tf.device("/gpu:1"): ##SHOULD BE GPU1
             L = -tf.reduce_sum(self.y*tf.log(self.y_pred+1e-10) + 
                                0.55*(1 - self.y)* tf.log(1 - self.y_pred+1e-10),axis = 1)
             self.cost = tf.reduce_mean(L) + self.reg_lambda * l2
