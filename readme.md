@@ -8,7 +8,7 @@ Data Mining Lab, Sungkyunkwan university.
 
 This project is an automatic playlist continuation(APC) system implemented using Tensorflow.  
 The main algorithm we use is Denoising Autoencoders which reconstructs original playlists from an input of corrupted ones. 
-In additon, we apply Character-level convolutional networks to playlist-title based music recommendation.  
+In additon, we apply Character-level convolutional neural networks to playlist-title based music recommendation.  
 
 
 The charateristics of our model are as follows: 
@@ -16,7 +16,7 @@ The charateristics of our model are as follows:
 our system generates a list of recommended tracks to a new playlist(not in the training set).
 
 * Not only tracks but also artists are used to construct latent representation of playlists. 
-This allows robust recommendation for a playlist of songs occur in very few playlists.
+This allows robust recommendation for a playlist of tracks occur in very few playlists.
 
 ## Development Environment
 * Python Anaconda v4.4.10  
@@ -50,7 +50,7 @@ When you run the following command, tracks with less than three occurrences are 
 ```console
 python data_generator.py --mincount_trk 3 
 ```
-4. scripts above populate the ‘./data’ with one training json file, multiple types of test json, and challenge json.  
+4. Scripts above populate the ‘./data’ with one training json file, multiple types of test json, and challenge json.  
 
     
 Each test files contains same seed pattern as Spotify RecSys Challenge: seed 0, 1, 5, 10, 25, 100, 25r, 100r.  
@@ -64,12 +64,12 @@ Each version performs better on one of four different challenge categories.
 Our model is composed of two parts: Denoising Autoencoders and Character-level CNN; 
 train the parameters of the DAE first, then integrate with char-level CNN.
 1. Create a folder into the root folder of the project. *config.ini* file, which contains information required to run the model, 
-must be placed into the created folder(Check the structure of *conf.ini* below).  
+must be placed into the created folder(Check the structure of *config.ini* below).  
 2. You can train models by running **main.py**.  
-*Arguments of data_generator.py*   
+*Arguments of main.py*   
 `--dir`			: Directory name which contains config file  
 `--pretrain`	: Pretrain dae parameters if specified  
-`--dae`			: Train dae parameteres if specified  
+`--dae`			: Train dae parameters if specified  
 `--title`		: Train paramters of title module if specified  
 `--challenge`	: Generate challenge submission candidates if specified  
 `--testmode`	: Get the results without training the model if specified   
@@ -82,7 +82,7 @@ python main.py --dir sample --pretrain
 ```
 Run main in DAE mode after the loss is converged in pretrain mode.
 If you set pretrain file name in config.ini file, following command will use pretrained paramters saved in the fold you created(./sample). 
-You can also train DAE without initital value depending on the *config.ini *setting:  
+You can also train DAE without initital value depending on the *config.ini* setting:  
 ```console
 python main.py --dir sample --dae
 ```
