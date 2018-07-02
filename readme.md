@@ -12,7 +12,7 @@ In additon, we apply Character-level convolutional networks to playlist-title ba
 
 
 The charateristics of our model are as follows: 
-* Unlike pure collaborate filtering model which only extend playlists not profiled at training time, 
+* Unlike pure collaborate filtering model which only extend playlists profiled at training time, 
 our system generates a list of recommended tracks to a new playlist(not in the training set).
 
 * Not only tracks but also artists are used to construct latent representation of playlists. 
