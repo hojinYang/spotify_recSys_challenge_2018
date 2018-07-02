@@ -42,7 +42,7 @@ For example, you can set the dicrectories as the following command :
 ```console  
 python data_generator.py --datadir ./data --mpd_tr ./mpd_train --mpd_te ./mpd_test --mpd_ch ./challenge
 ```
-You can set manually the minimum number of occurences of tracks and artists on training set manually. 
+You can set the minimum number of occurences of tracks and artists on training set manually. 
 When you run the following command, tracks with less than three occurrences are removed:
 ```console
 python data_generator.py --mincount_trk 3 
