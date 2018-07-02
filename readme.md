@@ -119,7 +119,13 @@ Challenge data with four different categories are also created as we set `--divi
 Dividing challenge data into four categories means we use four different denoising schemes to train our model 
 and merge the results at the last moment.  
 3. We already set four different directories which contain *config.ini* optimized for each challenge categories. 
-The approximante information is as follows:  
+The approximante information is shown in the table below.  
+4. Run pretrain mode for each directories. Then run dae mode except 0to1_inorder  
+5. For title mode, it is more efficient to run just one directory(0to1_inorder) 
+and copy the thensor graph outputs(generated after running on title mode) to others. 
+You don't have to train in title mode for all directories, as outputs are same.  
+6. Run challenge mode for each directories.  
+7. Run ***merge_results.py*** to merge results from different directories and generate .csv files.  
 
 | directory | challenge category | firstN_range | input denoising | pretrain only	|
 |--------|--------|--------|--------|--------|
@@ -128,12 +134,28 @@ The approximante information is as follows:
 | 10to100_inorder | challenge_inorder_10to100 | 0.3, 0.6 | 0.75 | False |
 | 25to100_random | challenge_random_25to100 | -1 | 0.5, 0.8 | False |  
 
-4. Run pretrain mode for each directories. Then run dae mode except 0to1_inorder  
-5. For title mode, it is more efficient to run just one directory(0to1_inorder) 
-and copy the thensor graph outputs(generated after running on title mode) to others.  
-You don't have to train in title mode for all directories, as outputs are same.  
-6. Run challenge mode for each directories.  
-7. Run ***merge_results.py*** to merge results from different directories and generate .csv files.  
+In summary, run the following commands one line at a time:  
+```console
+# 997 mpd.slice on ./mpd_train, 3 mpd.slice on ./mpd_test, challenge set on ./challenge #  
+python data_generator.py  
+python main.py --dir 0to1_inorder --pretrain  
+python main.py --dir 0to1_inorder --title  
+python main.py --dir 0to1_inorder --challenge  
+# copy 0to1_inorder/graph to 5_inorder #
+python main.py --dir 5_inorder --pretrain  
+python main.py --dir 5_inorder --dae  
+python main.py --dir 5_inorder --challenge  
+# copy 0to1_inorder/graph to 10to100_inorder #
+python main.py --dir 10to100_inorder --pretrain  
+python main.py --dir 10to100_inorder --dae  
+python main.py --dir 10to100_inorder --challenge  
+# copy 0to1_inorder/graph to 25to100_inorder #
+python main.py --dir 25to100_random --pretrain  
+python main.py --dir 25to100_random --dae  
+python main.py --dir 25to100_random --challenge  
+
+python merge_results.py
+```
 
 
 ## Sturcture of config.ini
@@ -154,22 +176,22 @@ The directory contains one training json file and multiple types of test json fi
 **test_seed** - *comma seperated int(or int+’r’) list.* Seed numbers that you run the test after each epoch.   
 *test_seed =  1,5,10* means the system runs test after each epoch by reading test-1, test-5, test-10 json file in the directory set in fold_dir.  
 **update_seed** -  *comma seperated int(or int+’r’) list.* Seed numbers that is considered when updating parameters. Update_seed must be inner set of test_seed.  
-*test_seed = 25r,100r , update_seed = 100r *means  the system runs test after each epoch by reading test-25r, test-100r json file, creates log, 
+*test_seed = 25r,100r , update_seed = 100r* means  the system runs test after each epoch by reading test-25r, test-100r json file, creates log, 
 and update parameters if the test-100r’s r-precision  value increases.  
 **keep_prob** - *float(0.0<x<=1.0).* Drop out keep probability in hidden layer.  
 *keep_prob = 0.75* means drop out 25% of input for every batch.  
 **input_kp** - *comma seperated floats list(0.0<x<=1.0).* Denoising keep probability range in  input layer.  
 *input_kp = 0.5, 0.8* means denoise randomly selected probability between 50%~20%.  
-firstN_range - *comma seperated floats or int list.* The range of n 
+**firstN_range** - *comma seperated floats or int list.* The range of n 
 when you set the tracks from 0th track to n-th track of a playlist as input value.
-You can set it up in three different ways.
+You can set it up in three different ways.  
 *firstN_range = -1* means to consider all the songs in the playlist as an input value.  
-*firstN_range = float a , float b* means t0 set input track range from 0-th to random(a*N, b*N). (N == the lenght of the playlist)
+*firstN_range = float a , float b* means t0 set input track range from 0-th to random(a\*N, b\*N). (N == the lenght of the playlist)
 *firstN_range = int a , int b* means t0 set input track range from 0-th to random(a, b).   
 ex)  
 firstN_range - -1 : 0~N  
 firstN_range - 0,50 : 0~random(0,50)  
-firstN_range - 0.3,0.6 : 0~random(N*0.3, N*0.6)  
+firstN_range - 0.3,0.6 : 0~random(N\*0.3, N\*0.6)  
 **initval** - *string.* Name of pickle file which contains pretrained parameters. Set NULL if no initial value.     
 **save** - *string.* Name of pickle file to store the updated parameters.
 
@@ -200,7 +222,7 @@ firstN_range - 0.3,0.6 : 0~random(N*0.3, N*0.6)
 
 
 
-***[CHALLENGE]***
+***[CHALLENGE]***  
 **batch** - *int.* batch size.  
 **challenge_data** - *string.* Name of challenge file whose format is modified to fit our system in *data-dir*.  
 **result** - *string.* Name of pifckle file to save the result.  
