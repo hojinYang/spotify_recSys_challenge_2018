@@ -66,7 +66,7 @@ class Char_CNN():
 
         d = cnn_output.shape[1].value
         cnn_output = tf.nn.dropout(cnn_output, self.keep_prob)
-        with tf.name_scope("Output-Layer"):
+        with tf.device("/gpu:3"):
 
             init = tf.contrib.layers.xavier_initializer(uniform=False)
             W = tf.get_variable("Output_W", [d, self.output_dim], initializer=init)
