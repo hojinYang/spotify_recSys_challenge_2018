@@ -1,24 +1,21 @@
 
-# Spotify RecSys Challenge 2018
-***hello world!*** Team: Hojin Yang, Minjin Choi, and Yoon Ki Jeong. **Main track.**  
-Data Mining Lab, Sungkyunkwan university.   
-you can send us an email at hojin.yang7@gamil.com.  
-
- 
-**This document is constantly being updated.**
-
-
-This project is an automatic playlist continuation(APC) system implemented using [Tensorflow](https://www.tensorflow.org/).</br>
-The main algorithm we use is Denoising Autoencoders which reconstructs original playlists from those with noise.</br>
-In addition, we apply Character-level convolutional neural networks to playlist-title based music recommendation.  
-
-
-The charateristics of our model are as follows: 
-* Unlike pure collaborate filtering model which only extends playlists profiled at training time, 
+# MMCF: Multimodal Collaborative Filtering for Automatic Playlist Continuation
+The submission of ACM recSys challenge 2018 (main track). 
+We propose MMCF, which is consists of two components: (1) Context-aware autoencoders using 
+both the playlist and its categorical contents and (2) Character-level convolutional neural networks 
+that learn the latent relationship between playlists and their titles.
+The charateristics of our model are as follows:  
+- Unlike pure collaborate filtering model which only extends playlists profiled at training time, 
 our system generates a list of recommended tracks to a new playlist(not in the training set).
-
-* Not only tracks but also artists are used to construct latent representation of playlists. 
+- Not only tracks but also artists are used to construct latent representation of playlists. 
 This allows robust recommendation for a playlist of songs occur in very few playlists.
+![model](./img/img.png)
+
+## Team info  
+***hello world!*** team: Hojin Yang, Minjin Choi, and Yoonki Jeong.  
+Undergraduate research assistants of Data Mining Lab, Sungkyunkwan university.   
+You can send us an email at hojin.yang7@gamil.com.  
+
 
 ## Development Environment
 * Python Anaconda v4.4.10  
