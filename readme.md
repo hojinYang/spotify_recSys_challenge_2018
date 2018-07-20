@@ -13,8 +13,8 @@ This allows robust recommendation for a playlist of songs occur in very few play
 
 ## Team info  
 ***hello world!*** team: Hojin Yang, Minjin Choi, and Yoonki Jeong.  
-Undergraduate research assistants of Data Mining Lab, Sungkyunkwan university.   
-You can send us an email at hojin.yang7@gamil.com.  
+Undergraduate research assistants of Data Mining Lab(Prof. Jongwuk Lee), Sungkyunkwan university.   
+You can send us an email at hojin.yang7@gmail.com.  
 
 
 ## Development Environment
