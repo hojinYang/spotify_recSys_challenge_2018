@@ -10,43 +10,19 @@ import os
 import pickle
 import random
 
-random.seed(180610)
+random.seed(181022)
 
 VARIOUS_ARTISTS_URI = '0LyfQWJT6nXafLPZqxe9Of'
-MAX_TITLE_LEN = 25
-chars = list('''abcdefghijklmnopqrstuvwxyz/<>+-1234567890''')
-char2ix = {ch: i for i, ch in enumerate(chars)}
-NUM_CHAR = len(char2ix)
-
-def normalize_name(name):
-    name = name.lower()
-    name = re.sub(r"[.,#!$%\^\*;:{}=\_`~()@]", ' ', name)
-    name = re.sub(r'\s+', ' ', name).strip()
-    return name
-
-
-def change_title2ixs(title):
-    ixs = []
-    for char in title:
-        ix = char2ix.get(char,-1)
-        if ix == -1: continue
-        ixs.append(ix)
-        if len(ixs) == MAX_TITLE_LEN : break
-    cur_len = len(ixs)
-    ixs = ixs+[-1]*(MAX_TITLE_LEN - cur_len)
-    return ixs
-    
 
 class Spotify_train:
     """
     generate training data set (a set of MPDs->train)
     """
-    def __init__(self, train_fullpaths, trk_min_count, art_min_count, is_title_normalize, save_dir):
-        self.is_title_normalize = is_title_normalize
+    def __init__(self, train_fullpaths, trk_min_count, art_min_count, save_dir):
         self.num_playlists = 0
         self.playlist_tracks = list()
         self.playlist_artists = list()
-        self.playlist_titles = list()
+
         self.track2artist = dict()
         self.track_histogram = collections.Counter()
         self.artist_histogram = collections.Counter()
@@ -70,25 +46,23 @@ class Spotify_train:
         del o_dict
 
         playlists = []
-        print("len %d %d %d" % (len(self.playlist_tracks), len(self.playlist_artists), len(self.playlist_titles)))
-        for tracks_uri, artists_uri, title in zip(self.playlist_tracks, self.playlist_artists, self.playlist_titles):
+        print("len %d %d" % (len(self.playlist_tracks), len(self.playlist_artists)))
+        for tracks_uri, artists_uri, title in zip(self.playlist_tracks, self.playlist_artists):
             tracks_id = self.change_uri2id(tracks_uri, track_uri2id)
             artists_id = self.change_uri2id(artists_uri, artist_uri2id)
             if len(tracks_id) == 0 and len(artists_id) == 0:
                 continue
             if len(tracks_id) > 250 or len(artists_id) > 250:
                 continue
-            ixs = change_title2ixs(title)
-            playlists.append([tracks_id, artists_id, ixs])
+
+            playlists.append([tracks_id, artists_id])
             self.num_playlists += 1
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
            
         file_data = dict()
-        file_data['is_title_normalize'] = self.is_title_normalize
-        file_data['max_title_len'] = MAX_TITLE_LEN
-        file_data['num_char'] = NUM_CHAR
+
         file_data['track_total'] = total_trk_uri_list
         file_data['track_count'] = trk_count_list
         
@@ -104,11 +78,6 @@ class Spotify_train:
               (self.num_playlists, len(total_trk_uri_list), len(track_uri2id), len(artist_uri2id)))
                 
     def process_playlist(self, playlist):
-        name = playlist['name']
-        if self.is_title_normalize:
-            name = normalize_name(name)    
-        self.playlist_titles.append(name)
-
         tracks = []
         artists = []
         for track in playlist['tracks']:
@@ -156,7 +125,6 @@ class Spotify_test:
         self.track_uri2id = train['track_uri2id']
         self.artist_uri2id = train['artist_uri2id']
         self.track_total = set(train['track_total'])
-        self.is_title_normalize = bool(train['is_title_normalize'])
         self.is_shuffle = is_shuffle
 
         self.test_seeds_num = test_seeds_num
@@ -238,93 +206,5 @@ class Spotify_test:
             if track not in seeds_tracks:
                 answers.append(track)
 
-        name = playlist['name']
-        if self.is_title_normalize:
-            name = normalize_name(name)
-        ixs = change_title2ixs(name)
-
         self.num_playlists += 1
-        self.playlists.append([seeds_tracks, seeds_artists, ixs, answers])
-
-
-class Spotify_challenge:
-    def __init__(self, challenge_fullpaths, train_json, save_dir, num_trk_lst, in_order):
-        with open(train_json) as data_file:
-            train = json.load(data_file)
-        self.track_uri2id = train['track_uri2id']
-        self.artist_uri2id = train['artist_uri2id']
-        self.is_title_normalize = bool(train['is_title_normalize'])
-        
-        self.num_playlists = 0
-        self.playlists = list()
-        self.in_order = in_order
-        self.num_trk_lst = num_trk_lst
-        
-        for fullpath in challenge_fullpaths:
-            f = open(fullpath)
-            js = f.read()
-            f.close()
-            mpd_slice = json.loads(js)
-            for playlist in mpd_slice['playlists']:
-                self.process_playlist_for_challenge(playlist)
-                
-        if not os.path.isdir(save_dir):
-            os.mkdir(save_dir)
-        id2uri = {v: k for k, v in self.track_uri2id.items()}
-        
-        file_data = dict()
-        file_data['max_title_len'] = MAX_TITLE_LEN
-        file_data['num_char'] = NUM_CHAR
-        file_data['in_order'] = self.in_order
-        file_data['num_tracks'] = len(self.track_uri2id)
-        file_data['num_items'] = len(self.track_uri2id) + len(self.artist_uri2id)
-        file_data['id2uri'] = id2uri
-        file_data['playlists'] = self.playlists
-
-        name = 'challenge'
-        if self.in_order:
-            name = name+ '_inorder'
-        else:
-            name = name + '_random'
-        if len(num_trk_lst) == 1:
-            name = name + '_%d' % self.num_trk_lst[0]
-        else:
-            name = name + '_%dto%d' %(self.num_trk_lst[0],self.num_trk_lst[-1])
-        print(name)
-        with open(save_dir+'/'+name,'w') as make_file:
-            json.dump(file_data,make_file,indent="\t")
-        print("num_playlists:%d" % self.num_playlists )
-                
-    def process_playlist_for_challenge(self, playlist):
-        tracks = []
-        artists = []
-        last_pos = -1
-        if len(playlist['tracks']) > 0:
-            last_pos = playlist['tracks'][-1]['pos']
-        num_samples = playlist['num_samples']
-        is_in_order = (last_pos+1 == num_samples)
-        if (self.in_order != is_in_order) or (num_samples not in self.num_trk_lst):
-            return
-
-        for track in playlist['tracks']:
-            track_uri = track['track_uri'].split(':')[2]
-            artist_uri = track['artist_uri'].split(':')[2]
-            track_id = self.track_uri2id.get(track_uri, -1)
-            if track_id != -1:
-                tracks.append(track_id)
-            artist_id = self.artist_uri2id.get(artist_uri, -1)
-            if artist_id != -1:
-                artists.append(artist_id)
-    
-        self.num_playlists += 1
-        
-        is_name = 0
-        ixs = [-1]*MAX_TITLE_LEN
-        if 'name' in playlist:
-            is_name = 1
-            name = playlist['name']
-            if self.is_title_normalize:
-                name = normalize_name(name)
-            ixs = change_title2ixs(name)
-
-        self.playlists.append([tracks, artists, ixs, [is_name], playlist['pid']])
+        self.playlists.append([seeds_tracks, seeds_artists, answers])
