@@ -12,22 +12,22 @@ class Conf:
     def __init__(self, dir, ini):
         self.dir = dir
         self.ini = ini
-        self.data_dir = self.ini.get('BASE','data_dir')
-        self.testsize = int(self.ini.get('BASE', 'testsize'))
-        self.verbose = bool(self.ini.get('BASE','verbose'))
+        self.data_dir = self.ini.get('PARAM','data_dir')
+        self.testsize = int(self.ini.get('PARAM', 'testsize'))
+        self.verbose = bool(self.ini.get('PARAM','verbose'))
 
-        self.epochs = int(self.ini.get('BASE','epochs'))
-        self.batch = int(self.ini.get('BASE','batch'))
-        self.lr = float(self.ini.get('BASE', 'lr'))
+        self.epochs = int(self.ini.get('PARAM','epochs'))
+        self.batch = int(self.ini.get('PARAM','batch'))
+        self.lr = float(self.ini.get('PARAM', 'lr'))
 
-        test_seed = self.ini.get('BASE', 'test_seed')
+        test_seed = self.ini.get('PARAM', 'test_seed')
         self.test_seed = ['test-'+item for item in test_seed.split(',')]
-        input_kp = self.ini.get('BASE','input_kp')
+        input_kp = self.ini.get('PARAM','input_kp')
         self.input_kp = [float(item) for item in input_kp.split(',')]
-        self.hidden_kp = float(self.ini.get('BASE', 'keep_prob'))
-        self.n_hidden = int(self.ini.get('BASE', 'hidden'))
+        self.hidden_kp = float(self.ini.get('PARAM', 'hidden_kp'))
+        self.n_hidden = int(self.ini.get('PARAM', 'n_hidden'))
 
-        self.save = os.path.join(self.dir, self.ini.get('BASE', 'save'))
+        self.save = os.path.join(self.dir, self.ini.get('PARAM', 'save'))
 
 
 if __name__ == '__main__':
@@ -50,5 +50,4 @@ if __name__ == '__main__':
     ini.read(ini_dir)
     conf = Conf(dir, ini)
 
-    conf.set_pretrain_conf()
     main_train.run(conf, args.testmode)
