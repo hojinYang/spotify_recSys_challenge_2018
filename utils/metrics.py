@@ -3,20 +3,21 @@ import numpy as np
 
 def get_r_precision(answer, cand):
     set_answer = set(answer)
-    r = len(set_answer&set(cand[:len(set_answer)])) / len(set_answer)
+    r = len(set_answer&set(cand[:len(answer)])) / len(answer)
     return r
 
 def get_ndcg(answer, cand):
     cand_len = len(cand) 
-    idcg=0
+    idcg=1
+    idcg_idx=2
     dcg=0
-
-    for i in range(cand_len):
+    if cand[0] in answer:  dcg=1
+    
+    for i in range(1,cand_len):
         if cand[i] in answer: 
-            dcg += (1/math.log(i+1+1,2))
-
-    for i in range(len(set(answer))):
-        idcg += (1/math.log(i+1+1,2))
+            dcg += (1/math.log(i+1,2))
+            idcg += (1/math.log(idcg_idx,2))
+            idcg_idx+=1
     
     return dcg/idcg
 
