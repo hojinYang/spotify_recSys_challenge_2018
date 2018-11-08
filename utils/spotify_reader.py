@@ -37,6 +37,7 @@ def change_title2ixs(title):
     return ixs
     
 
+
 class Spotify_train:
     """
     generate training data set (a set of MPDs->train)
@@ -69,9 +70,18 @@ class Spotify_train:
         total_art_uri_list, art_count_list, artist_uri2id = self.create_uri2id(o_dict,art_min_count,len(track_uri2id))
         del o_dict
 
+        ##
+        trk_cdf = self.get_cdf(trk_count_list)
+        class_divpnt = self.get_class_divpnt(trk_cdf, [0.3,0.8,0.9])
+
         playlists = []
+<<<<<<< HEAD
         print("len %d %d %d" % (len(self.playlist_tracks), len(self.playlist_artists), len(self.playlist_titles)))
         for tracks_uri, artists_uri, title in zip(self.playlist_tracks, self.playlist_artists, self.playlist_titles):
+=======
+        print("len %d %d" % (len(self.playlist_tracks), len(self.playlist_artists)))
+        for tracks_uri, artists_uri in zip(self.playlist_tracks, self.playlist_artists):
+>>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
             tracks_id = self.change_uri2id(tracks_uri, track_uri2id)
             artists_id = self.change_uri2id(artists_uri, artist_uri2id)
             if len(tracks_id) == 0 and len(artists_id) == 0:
@@ -96,6 +106,7 @@ class Spotify_train:
         file_data['artist_uri2id'] = artist_uri2id
         
         file_data['playlists'] = playlists
+        file_data['class_divpnt'] = class_divpnt
 
         print('train')
         with open(save_dir+'/'+'train', 'w') as make_file:
@@ -124,8 +135,9 @@ class Spotify_train:
             
         self.playlist_tracks.append(tracks)
         self.playlist_artists.append(artists)
-    
-    def create_uri2id(self, o_dict, min_count, start_from):
+
+    @staticmethod
+    def create_uri2id(o_dict, min_count, start_from):
         uri_list = list(o_dict.keys())
         valid_uri_list = uri_list[:]
         count_list = list(o_dict.values())
@@ -135,8 +147,9 @@ class Spotify_train:
             del valid_uri_list[rm_from:]
         uri2id = dict(zip(valid_uri_list, range(start_from, start_from+len(valid_uri_list))))
         return uri_list, count_list, uri2id
-    
-    def change_uri2id(self, uris, uri2id):
+
+    @staticmethod
+    def change_uri2id(uris, uri2id):
         ids = []
         for cur_uri in uris:
             cur_id = uri2id.get(cur_uri, -1)
@@ -144,6 +157,26 @@ class Spotify_train:
                 continue
             ids.append(cur_id)
         return ids
+
+    @staticmethod
+    def get_cdf(count_list):
+        s = sum(count_list)
+        count = count_list[:]
+        cum = [0]
+        for i in range(len(count)):
+            cum.append(cum[i] + count[i])
+        cdf = [i / s for i in cum]
+        return cdf[1:]
+
+    @staticmethod
+    def get_class_divpnt(cdf, points):
+        idx = [0]
+        for p in points:
+            for i in range(idx[-1], len(cdf)):
+                if cdf[i] > p:
+                    idx.append(i - 1)
+                    break
+        return idx[1:]
 
 
 class Spotify_test:
@@ -156,8 +189,13 @@ class Spotify_test:
         self.track_uri2id = train['track_uri2id']
         self.artist_uri2id = train['artist_uri2id']
         self.track_total = set(train['track_total'])
+<<<<<<< HEAD
         self.is_title_normalize = bool(train['is_title_normalize'])
+=======
+        self.class_divpnt = train['class_divpnt']
+>>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
         self.is_shuffle = is_shuffle
+
 
         self.test_seeds_num = test_seeds_num
         self.num_playlists = 0
@@ -173,6 +211,7 @@ class Spotify_test:
            
         file_data = {}
         file_data['playlists'] = self.playlists
+        file_data['class_divpnt'] = self.class_divpnt
 
         name = 'test-'+str(test_seeds_num)
         if self.is_shuffle:
@@ -225,18 +264,27 @@ class Spotify_test:
             artists = artists_shuf
 
         seeds_tracks = []
+        seeds_tracks_class = []
         seeds_artists = []
         answers = []
+        answers_class = []
 
         for track, artist in zip(tracks[:self.test_seeds_num], artists[:self.test_seeds_num]):
             if track != -1:
                 seeds_tracks.append(track)
+                cls = self.get_class(self.class_divpnt, track)
+                seeds_tracks_class.append(cls)
             if artist != -1:
                 seeds_artists.append(artist)
 
         for track in tracks[self.test_seeds_num:]:
-            if track not in seeds_tracks:
+            if (track not in seeds_tracks) and (track == -1 or track not in answers):
                 answers.append(track)
+                cls = track
+                if track != -1:
+                    cls = self.get_class(self.class_divpnt, track)
+                answers_class.append(cls)
+
 
         name = playlist['name']
         if self.is_title_normalize:
@@ -317,6 +365,7 @@ class Spotify_challenge:
                 artists.append(artist_id)
     
         self.num_playlists += 1
+<<<<<<< HEAD
         
         is_name = 0
         ixs = [-1]*MAX_TITLE_LEN
@@ -328,3 +377,13 @@ class Spotify_challenge:
             ixs = change_title2ixs(name)
 
         self.playlists.append([tracks, artists, ixs, [is_name], playlist['pid']])
+=======
+        self.playlists.append([seeds_tracks, seeds_artists, answers, seeds_tracks_class, answers_class])
+
+    @staticmethod
+    def get_class(class_divpnt, idx):
+        for c in class_divpnt:
+            if idx <= c:
+                return class_divpnt.index(c)
+        return len(class_divpnt)
+>>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b

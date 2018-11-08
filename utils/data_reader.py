@@ -14,6 +14,7 @@ class data_reader:
         self.max_title_len = data_tr['max_title_len']
         self.num_char = data_tr['num_char']
         self.playlists = data_tr['playlists']
+        self.class_divpnt = data_tr['class_divpnt']
 
         del data_tr
         self.batch_size = batch_size
@@ -143,25 +144,96 @@ class data_reader_test:
         self.test_idx = 0
 
     def next_batch_test(self):
+
         trk_positions = []
-        art_positions = []
+        answers_for_grad = []
+        # art_positions = []
 
         test_seed = []
         test_answer = []
-
-        test_titles = []
+        test_answer_cls = []
 
         # start_time = time.time()
         for i in range(self.batch_size):
-            seed, seed_art, title, answer = self.playlists[self.test_idx]
+            seed, seed_art, answer, seed_cls, answer_cls = self.playlists[self.test_idx]
 
-            trks = np.array([seed]).T
+            trks = np.array([seed], dtype=np.int64).T
             playlist = np.full_like(trks, fill_value=i, dtype=np.int)
             conc = np.concatenate((playlist, trks), axis=1)
             trk_positions.append(conc)
 
             test_seed.append(seed)
             test_answer.append(answer)
+            test_answer_cls.append(answer_cls)
+
+            answer_for_grad = seed[:]
+            for a in answer:
+                if a != -1:
+                    answer_for_grad.append(i)
+            trks = np.array([answer_for_grad], dtype=np.int64).T
+            playlist = np.full_like(trks, fill_value=i, dtype=np.int)
+            conc = np.concatenate((playlist, trks), axis=1)
+            answers_for_grad.append(conc)
+
+            '''
+            arts = np.array([seed_art]).T
+            playlist = np.full_like(arts, fill_value=i, dtype=np.int)
+            conc = np.concatenate((playlist, arts), axis=1)
+            art_positions.append(conc)
+            '''
+
+            self.test_idx += 1
+            if self.test_idx == len(self.playlists):
+                self.test_idx = 0
+                break
+        # print(self.test_idx)
+        trk_positions = np.concatenate(trk_positions)
+        answers_for_grad = np.concatenate(answers_for_grad)
+        # art_positions = np.concatenate(art_positions)
+        # x_positions = np.concatenate((trk_positions, art_positions), 0)
+        # x_ones = [1]*len(trk_positions) + [0.5]*len(art_positions)
+
+        return trk_positions, test_seed, test_answer, test_answer_cls, answers_for_grad
+
+    def next_batch_test_cls(self, cls_list):
+        trk_positions = []
+        answers_for_grad = []
+        # art_positions = []
+
+        test_seed = []
+        test_answer = []
+        test_answer_cls = []
+
+        test_titles = []
+
+        # start_time = time.time()
+        for i in range(self.batch_size):
+            seed, seed_art, answer, seed_cls, answer_cls = self.playlists[self.test_idx]
+
+            _seed = []
+            for c, s in zip(seed_cls, seed):
+                if c in cls_list:
+                    _seed.append(s)
+            seed = _seed
+
+            trks = np.array([seed], dtype=np.int64).T
+            playlist = np.full_like(trks, fill_value=i, dtype=np.int)
+            conc = np.concatenate((playlist, trks), axis=1)
+            trk_positions.append(conc)
+
+            test_seed.append(seed)
+            test_answer.append(answer)
+            test_answer_cls.append(answer_cls)
+
+            answer_for_grad = test_seed[:]
+            for i in test_answer:
+                if i != -1:
+                    answer_for_grad.append(i)
+            trks = np.array([answer_for_grad], dtype=np.int64).T
+            playlist = np.full_like(trks, fill_value=i, dtype=np.int)
+            conc = np.concatenate((playlist, trks), axis=1)
+            answers_for_grad.append(conc)
+
 
             arts = np.array([seed_art]).T
             playlist = np.full_like(arts, fill_value=i, dtype=np.int)
@@ -175,6 +247,7 @@ class data_reader_test:
                 break
         # print(self.test_idx)
         trk_positions = np.concatenate(trk_positions)
+<<<<<<< HEAD
         art_positions = np.concatenate(art_positions)
         x_positions = np.concatenate((trk_positions, art_positions), 0)
         x_ones = [1]*len(trk_positions) + [0.5]*len(art_positions)
@@ -245,3 +318,11 @@ class data_reader_challenge:
         x_ones = trk_ones + [0.5] * len(art_positions)
 
         return x_positions, ch_seed, ch_titles, ch_titles_exist, ch_pid, x_ones
+=======
+        answers_for_grad = np.concatenate(answers_for_grad)
+        # art_positions = np.concatenate(art_positions)
+        # x_positions = np.concatenate((trk_positions, art_positions), 0)
+        # x_ones = [1]*len(trk_positions) + [0.5]*len(art_positions)
+
+        return trk_positions, test_seed, test_answer, test_answer_cls, answers_for_grad
+>>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
