@@ -2,7 +2,10 @@
 ## 2018 ACM RecSys Challenge 2'nd Place Solution 
 
 **Team members**: Hojin Yang, Yoonki Jeong, Minjin Choi (Data Intelligence and Learning Lab, Sungkyunkwan University)
-[paper](https://hojinYang.github.io/papers/MMCF18.pdf)[slides](https://www.slideshare.net/HojinYang3/mmcf-multimodal-collaborative-filtering-for-automatic-playlist-conitnuation)[challenge](http://www.recsyschallenge.com/2018/)
+
+[[paper]](https://hojinYang.github.io/papers/MMCF18.pdf) [[slides]](https://www.slideshare.net/HojinYang3/mmcf-multimodal-collaborative-filtering-for-automatic-playlist-conitnuation) [[challenge]](http://www.recsyschallenge.com/2018/)
+
+Contact: hojin.yang7@gmail.com
 
 ## Intoduction
 This repository contains the tensorflow v1 implementation of our entry for main track. 
