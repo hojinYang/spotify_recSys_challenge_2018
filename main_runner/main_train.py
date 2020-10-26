@@ -60,7 +60,6 @@ def eval(reader_test, conf, sess, model):
     test_size = len(reader_test.playlists)
 
     while True:
-<<<<<<< HEAD
         predicted_matrix = None
         x_positions, test_seed, test_answer, titles, x_ones = reader_test.next_batch_test()
         if conf.mode in ['pretrain', 'dae']:
@@ -78,23 +77,6 @@ def eval(reader_test, conf, sess, model):
                                                                  model.keep_prob: 1.0, model_title.keep_prob: 1.0,
                                                                  model.input_keep_prob: 1.0,
                                                                  model.titles_use: [[1]] * conf.batch})
-=======
-        x_positions, test_seed, test_answer, test_answer_cls, answers_for_grad = reader_test.next_batch_test()
-
-        predicted_matrix, hidden_mat, encoder_grad_sqrsum, decoder_grad_sqrsum = \
-            sess.run([model.y_pred, model.hidden, model.encoder_grad_sqrsum, model.decoder_grad_sqrsum],
-                     feed_dict={model.x_positions: x_positions,
-                                model.x_ones: np.ones(len(x_positions)),
-                                model.y_positions: answers_for_grad,
-                                model.y_ones: np.ones(len(answers_for_grad)),
-                                model.keep_prob: 1.0, model.input_keep_prob: 1.0})
-
-        hidden_sqrsum = get_row_wise_sqrsum(hidden_mat)[:len(test_seed)]
-        e_g = get_avg_by_cls(encoder_grad_sqrsum, conf.class_divpnt)
-        d_g = get_avg_by_cls(decoder_grad_sqrsum, conf.class_divpnt)
-        encoder_grad_sqrsum_by_cls.append(e_g)
-        decoder_grad_sqrsum_by_cls.append(d_g)
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
 
 
 
@@ -152,16 +134,10 @@ def run(conf, only_testmode):
 
     conf.class_divpnt = reader.class_divpnt
     conf.n_tracks = reader.num_tracks
-<<<<<<< HEAD
     conf.n_input = reader.num_items
     conf.n_output = reader.num_items
     conf.charsize = reader.num_char
     conf.strmaxlen = reader.max_title_len
-=======
-
-    conf.n_input = conf.n_tracks
-    conf.n_output = conf.n_tracks
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
 
     kp_range = conf.input_kp
     test_seed = conf.test_seed
@@ -174,7 +150,6 @@ def run(conf, only_testmode):
 
     print(conf.n_input)
 
-<<<<<<< HEAD
     model_title = None
     if conf.mode == 'pretrain':
         info = '[pretrain mode]'
@@ -192,22 +167,6 @@ def run(conf, only_testmode):
     info += ' start at ' + str(datetime.datetime.now())
     log_write(conf, '*'*10)
     log_write(conf, info)
-=======
-    if only_testmode:
-        conf.initval = conf.save
-    model = AE(conf)
-
-    # info = ' start at ' + str(datetime.datetime.now())
-    dir = str(datetime.datetime.now())
-    dir_list = re.findall('\d+', dir)
-    dir = ""
-    for i in dir_list:
-        dir+=i
-    dir = os.path.join(conf.dir, dir)
-    os.mkdir(dir)
-    # log_write(conf, '*'*10)
-    # log_write(conf, info)
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
 
     model.fit()
     sess = tf.Session()
@@ -239,7 +198,6 @@ def run(conf, only_testmode):
 
         input_kp = random.uniform(kp_range[0], kp_range[-1])
 
-<<<<<<< HEAD
         if conf.mode in ['pretrain', 'dae']:
             rand_int = np.random.randint(2)
             if rand_int == 0:
@@ -261,12 +219,6 @@ def run(conf, only_testmode):
                                        model.keep_prob: conf.kp, model_title.keep_prob: conf.title_kp,
                                        model.input_keep_prob: input_kp,
                                        model.titles_use: [[1]] * conf.batch})
-=======
-        _, l = sess.run([model.optimizer, model.cost],
-                        feed_dict={model.x_positions: trk_positions, model.x_ones: np.ones(len(trk_positions)),
-                                   model.y_positions: trk_positions, model.y_ones: np.ones(len(trk_positions)),
-                                   model.keep_prob: conf.hidden_kp, model.input_keep_prob: input_kp})
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
 
         loss += l
         iter += 1
@@ -277,7 +229,6 @@ def run(conf, only_testmode):
             epoch += 1
             loss = loss / iter
             if epoch >= 0:
-<<<<<<< HEAD
                 log_write(conf, "epoch "+str(epoch))
                 log_write(conf, "training loss: "+str(loss))
                 cur_eval = 0
@@ -296,54 +247,6 @@ def run(conf, only_testmode):
                         saver.save(sess, conf.save)
                     max_eval = cur_eval
                     log_write(conf, "The highest score is updated. Parameters are saved")
-=======
-                r = "%d %f"%(epoch, loss)
-                log_write(dir, "loss", r)
-
-                encoder_avg_by_cls, decoder_avg_by_cls = get_encdec_avg_by_cls(conf, sess, model)
-                r = "%d " % epoch
-                for i in encoder_avg_by_cls:
-                    r += "%f " % i
-                log_write(dir, "encoder_avg_by_cls", r)
-
-                r = "%d " % epoch
-                for i in decoder_avg_by_cls:
-                    r += "%f " % i
-                log_write(dir, "decoder_avg_by_cls", r)
-
-
-                for seed_num, reader_test in readers_test.items():
-                    r = "%d " %epoch
-                    # log_write(conf, "seed num: "+seed_num)
-                    rprec, hr_by_cls, cand_cls_dist, total_hidden_sqrsum, \
-                    encoder_grad_sqrsum_by_cls, decoder_grad_sqrsum_by_cls= eval(reader_test, conf, sess, model)
-                    # r = show_result(rprec, ndcg, rsc)
-                    r += "%f " %rprec
-
-                    for i in hr_by_cls:
-                        r += "%f " %i
-                    log_write(dir, seed_num, r)
-
-                    r = "%d " %epoch
-                    for i in cand_cls_dist:
-                        r += "%f " % i
-                    log_write(dir, seed_num+"-cand_cls_dist", r)
-
-                    r = "%d " % epoch
-                    for i in encoder_grad_sqrsum_by_cls:
-                        r += "%f " % i
-                    log_write(dir, seed_num + "-encoder_grad_sqrsum_by_cls", r)
-
-                    r = "%d " % epoch
-                    for i in decoder_grad_sqrsum_by_cls:
-                        r += "%f " % i
-                    log_write(dir, seed_num + "-decoder_grad_sqrsum_by_cls", r)
-
-                    r = "%d %f" % (epoch, total_hidden_sqrsum)
-                    log_write(dir, seed_num + "-hidden_sqrsum", r)
-
-
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
             loss = 0
             iter = 0
             if epoch == conf.epochs:

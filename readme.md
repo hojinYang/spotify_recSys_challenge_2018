@@ -173,7 +173,6 @@ The directory contains one training json file and multiple types of test json fi
 **challenge_dir** - *string.* Directory where final results are saved.   
 **testsize** - *int.* The number of maximum test playlist in each test case.
 
-
 ***[DAE]***  
 **epochs** - *int.* Number of training epoch.  
 **batch** - *int.* batch size.  
