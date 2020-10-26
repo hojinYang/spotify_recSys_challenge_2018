@@ -75,13 +75,8 @@ class Spotify_train:
         class_divpnt = self.get_class_divpnt(trk_cdf, [0.3,0.8,0.9])
 
         playlists = []
-<<<<<<< HEAD
         print("len %d %d %d" % (len(self.playlist_tracks), len(self.playlist_artists), len(self.playlist_titles)))
         for tracks_uri, artists_uri, title in zip(self.playlist_tracks, self.playlist_artists, self.playlist_titles):
-=======
-        print("len %d %d" % (len(self.playlist_tracks), len(self.playlist_artists)))
-        for tracks_uri, artists_uri in zip(self.playlist_tracks, self.playlist_artists):
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
             tracks_id = self.change_uri2id(tracks_uri, track_uri2id)
             artists_id = self.change_uri2id(artists_uri, artist_uri2id)
             if len(tracks_id) == 0 and len(artists_id) == 0:
@@ -189,11 +184,7 @@ class Spotify_test:
         self.track_uri2id = train['track_uri2id']
         self.artist_uri2id = train['artist_uri2id']
         self.track_total = set(train['track_total'])
-<<<<<<< HEAD
         self.is_title_normalize = bool(train['is_title_normalize'])
-=======
-        self.class_divpnt = train['class_divpnt']
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
         self.is_shuffle = is_shuffle
 
 
@@ -365,7 +356,6 @@ class Spotify_challenge:
                 artists.append(artist_id)
     
         self.num_playlists += 1
-<<<<<<< HEAD
         
         is_name = 0
         ixs = [-1]*MAX_TITLE_LEN
@@ -377,13 +367,3 @@ class Spotify_challenge:
             ixs = change_title2ixs(name)
 
         self.playlists.append([tracks, artists, ixs, [is_name], playlist['pid']])
-=======
-        self.playlists.append([seeds_tracks, seeds_artists, answers, seeds_tracks_class, answers_class])
-
-    @staticmethod
-    def get_class(class_divpnt, idx):
-        for c in class_divpnt:
-            if idx <= c:
-                return class_divpnt.index(c)
-        return len(class_divpnt)
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b

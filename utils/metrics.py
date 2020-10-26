@@ -23,32 +23,8 @@ def get_r_precision(answer, cand, answer_cls, class_divpnt):
     cls_dist = get_class_dist(answer_cls, num_cls)
 
     set_answer = set(answer)
-<<<<<<< HEAD
     r = len(set_answer&set(cand[:len(answer)])) / len(answer)
     return r
-=======
-    cand = cand[:len(set_answer)]
-    cand_cls = []
-    for c in cand:
-        cls = get_class(class_divpnt, c)
-        cand_cls.append(cls)
-
-    _cand_cls_dist = get_class_dist(cand_cls, num_cls)
-    s = sum(_cand_cls_dist)
-    cand_cls_dist = [i/s for i in _cand_cls_dist]
-
-
-    s = set_answer & set(cand)
-    r = len(s) / len(set_answer)
-    lst = list(s)
-    for id in lst:
-        cls = answer_cls[answer.index(id)]
-        hr_by_cls[cls]+=1
-    for i in range(num_cls):
-        hr_by_cls[i] = hr_by_cls[i] / cls_dist[i]
-
-    return r, hr_by_cls, cand_cls_dist
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
 
 def get_ndcg(answer, cand):
     cand_len = len(cand) 

@@ -1,30 +1,23 @@
 
-# Spotify RecSys Challenge 2018
-***hello world!*** Team: Hojin Yang, Minjin Choi, and Yoon Ki Jeong. **Main track.**  
-Data Mining Lab, Sungkyunkwan university.   
-you can send us an email at hojin.yang7@gamil.com.  
+## 2018 ACM RecSys Challenge 2'nd Place Solution 
 
- 
-**This document is constantly being updated.**
+**Team members**: Hojin Yang, Yoonki Jeong, Minjin Choi (Data Intelligence and Learning Lab, Sungkyunkwan University)
+[paper](https://hojinYang.github.io/papers/MMCF18.pdf)[slides](https://www.slideshare.net/HojinYang3/mmcf-multimodal-collaborative-filtering-for-automatic-playlist-conitnuation)[challenge](http://www.recsyschallenge.com/2018/)
 
-
-This project is an automatic playlist continuation(APC) system implemented using Tensorflow.  
-The main algorithm we use is Denoising Autoencoders which reconstructs original playlists from an input of corrupted ones. 
-In additon, we apply Character-level convolutional neural networks to playlist-title based music recommendation.  
-
-
-The charateristics of our model are as follows: 
-* Unlike pure collaborate filtering model which only extends playlists profiled at training time, 
-our system generates a list of recommended tracks to a new playlist(not in the training set).
-
-* Not only tracks but also artists are used to construct latent representation of playlists. 
-This allows robust recommendation for a playlist of songs occur in very few playlists.
+## Intoduction
+This repository contains the tensorflow v1 implementation of our entry for main track. 
+We propose MMCF, which is consists of two components: (1) Context-aware autoencoders using 
+both the playlist and its categorical contents and (2) Character-level convolutional neural networks 
+that learn the latent relationship between playlists and their titles.
 
 ## Development Environment
 * Python Anaconda v4.4.10  
 * Tensorflow v1.5.0  
 * CUDA Toolkit v9.0 and cuDNN v7.0  
 * GPU: 4 Nvidia GTX 1080Ti  
+
+## Library
+* Tensorflow v1
 
 ## Dataset
 Spotify has produced the MPD(Million Playlist Dataset) which contains a million user-curated playlists. 

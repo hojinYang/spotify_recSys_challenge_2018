@@ -247,7 +247,6 @@ class data_reader_test:
                 break
         # print(self.test_idx)
         trk_positions = np.concatenate(trk_positions)
-<<<<<<< HEAD
         art_positions = np.concatenate(art_positions)
         x_positions = np.concatenate((trk_positions, art_positions), 0)
         x_ones = [1]*len(trk_positions) + [0.5]*len(art_positions)
@@ -318,11 +317,3 @@ class data_reader_challenge:
         x_ones = trk_ones + [0.5] * len(art_positions)
 
         return x_positions, ch_seed, ch_titles, ch_titles_exist, ch_pid, x_ones
-=======
-        answers_for_grad = np.concatenate(answers_for_grad)
-        # art_positions = np.concatenate(art_positions)
-        # x_positions = np.concatenate((trk_positions, art_positions), 0)
-        # x_ones = [1]*len(trk_positions) + [0.5]*len(art_positions)
-
-        return trk_positions, test_seed, test_answer, test_answer_cls, answers_for_grad
->>>>>>> e699f7b47d3f20b6e90a780eb2af4224ea75800b
