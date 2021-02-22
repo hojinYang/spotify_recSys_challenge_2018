@@ -1,8 +1,6 @@
 
 ## 2018 ACM RecSys Challenge 2'nd Place Solution 
 
-**Team members**: Hojin Yang, Yoonki Jeong, Minjin Choi (Data Intelligence and Learning Lab, Sungkyunkwan University)
-
 [[paper]](https://hojinYang.github.io/papers/MMCF18.pdf) [[slides]](https://www.slideshare.net/HojinYang3/mmcf-multimodal-collaborative-filtering-for-automatic-playlist-conitnuation) [[challenge]](http://www.recsyschallenge.com/2018/)
 
 Contact: hojin.yang7@gmail.com
@@ -12,6 +10,23 @@ This repository contains the tensorflow v1 implementation of our entry for main 
 We propose MMCF, which is consists of two components: (1) Context-aware autoencoders using 
 both the playlist and its categorical contents and (2) Character-level convolutional neural networks 
 that learn the latent relationship between playlists and their titles.
+
+
+## Citation
+If you are interested in building up your research on this work, please cite:
+
+```
+@inproceedings{mmcf18,
+author = {Yang, Hojin and Jeong, Yoonki and Choi, Minjin and Lee, Jongwuk},
+year = {2018},
+month = {10},
+pages = {1-6},
+title = {MMCF: Multimodal Collaborative Filtering for Automatic Playlist Continuation},
+isbn = {978-1-4503-6586-4},
+journal = {RecSys Challenge '18: Proceedings of the ACM Recommender Systems Challenge 2018},
+doi = {10.1145/3267471.3267482}
+}
+```
 
 ## Development Environment
 * Python Anaconda v4.4.10  
@@ -58,7 +73,7 @@ For submission, we train our models with four different denoising schemes.
 Each schemes performs better on one of four different challenge categories.  
 
 
-## Run The System
+## Implementation Detail
 Our model is composed of two parts: Denoising Autoencoders and Character-level CNN; 
 train the parameters of the DAE first, then integrate with char-level CNN.
 1. Create a folder into the root folder of the project. *config.ini* file, which contains information required to run the model, 
@@ -105,7 +120,7 @@ If you want to just check metrices scores after replacing paramters with directo
 python main.py --dir sample --dae --testmode
 ```
 
-## Build Our Submission
+## Submission Configuration
 We already set the initial setting: create 4 different directories(0to1_inorder,5_inorder,10to100_inorder, 25to100_random), 
 and set config files of each directories.  
 1. Divide 1,000 *mpd.slice.#.json files* into two directories(mpd_train, mpd_test). We use 997 slices for training 
